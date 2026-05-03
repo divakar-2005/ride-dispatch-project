@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ride-dispatch-frontend
+  labels:
+    app: ride-frontend
+spec:
+  replicas: 2 # Run 2 instances for high availability
+  selector:
+    matchLabels:
+      app: ride-frontend
+  template:
+    metadata:
+      labels:
+        app: ride-frontend
+    spec:
+      containers:
+      - name: react-ui
+        image: ride-frontend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  type: LoadBalancer # Exposes the frontend to the internet
+  selector:
+    app: ride-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
