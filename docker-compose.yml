@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+
+  # ── Backend API (FastAPI) ──────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ride-dispatch-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+      - SNS_TOPIC_ARN=${SNS_TOPIC_ARN:-arn:aws:sns:us-east-1:000876600788:driver-location-topic}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ride-network
+
+  # ── Frontend UI (React + Vite → Nginx) ────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend-ui
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000
+    container_name: ride-dispatch-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - ride-network
+
+  # ── Jenkins CI/CD ─────────────────────────────────────────────────────────
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: ride-dispatch-jenkins
+    ports:
+      - "9090:8080"      # Jenkins UI  → http://localhost:9090
+      - "50000:50000"    # Jenkins agent port
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock   # Let Jenkins run Docker
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    restart: unless-stopped
+    networks:
+      - ride-network
+
+networks:
+  ride-network:
+    driver: bridge
+
+volumes:
+  jenkins_data:

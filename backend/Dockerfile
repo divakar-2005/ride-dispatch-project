@@ -2,12 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy requirements and install dependencies
+# Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the Python simulator script
+# Copy source
 COPY main.py .
 
-# Run the simulator
-CMD ["python", "main.py"]
+# Expose API port
+EXPOSE 8000
+
+# Start FastAPI with uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

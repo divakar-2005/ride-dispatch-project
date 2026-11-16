@@ -1,3 +1,4 @@
+# ── Backend Deployment ──────────────────────────────────────────────────────
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,7 +6,7 @@ metadata:
   labels:
     app: ride-backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: ride-backend
@@ -15,18 +16,18 @@ spec:
         app: ride-backend
     spec:
       containers:
-      - name: python-simulator
-        image: ride-backend:latest
+      - name: backend
+        image: ride-dispatch-backend:latest
         imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
         env:
-        # These environment variables pass AWS credentials to boto3 inside the container.
-        # In a real production setup, use Kubernetes Secrets.
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
               name: aws-secrets
               key: access-key
-              optional: true # Set to true so it doesn't crash if secret isn't created yet for local testing
+              optional: true
         - name: AWS_SECRET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
@@ -35,3 +36,28 @@ spec:
               optional: true
         - name: AWS_DEFAULT_REGION
           value: "us-east-1"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ride-backend-service
+spec:
+  selector:
+    app: ride-backend
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000

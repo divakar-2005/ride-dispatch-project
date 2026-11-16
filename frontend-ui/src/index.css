@@ -1,5 +1,6 @@
-@import "tailwindcss";
-@config "../tailwind.config.js";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   color-scheme: dark;
@@ -13,7 +14,6 @@ body {
   overflow: hidden;
 }
 
-/* Glassmorphism utility */
 @layer components {
   .glass-panel {
     background-color: rgba(26, 29, 35, 0.6);
@@ -34,13 +34,13 @@ body {
   }
 }
 
-/* Leaflet Dark Mode tweaks */
+/* Leaflet Dark Mode */
 .leaflet-container {
   background-color: #0B0E14 !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: rgba(15, 23, 42, 0.9) !important;
+  background: rgba(15, 23, 42, 0.95) !important;
   backdrop-filter: blur(12px) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: #f1f5f9 !important;
@@ -49,36 +49,19 @@ body {
 }
 
 .leaflet-popup-tip {
-  background: rgba(15, 23, 42, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(15, 23, 42, 0.95) !important;
 }
 
 .leaflet-popup-close-button {
   color: #94a3b8 !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255,255,255,0.1);
   border-radius: 9999px;
 }
-
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-@keyframes pulse-soft {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
-}
-
-.animate-pulse-soft {
-  animation: pulse-soft 2s infinite ease-in-out;
+  background: rgba(255,255,255,0.2);
 }
