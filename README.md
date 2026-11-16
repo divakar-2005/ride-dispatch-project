@@ -1,4 +1,4 @@
-# Ride Dispatch Project
+  # Ride Dispatch Project
 
 A project consisting of a backend driver simulator and a frontend UI.
 
