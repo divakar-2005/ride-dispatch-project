@@ -46,7 +46,7 @@ services:
     image: jenkins/jenkins:lts
     container_name: ride-dispatch-jenkins
     ports:
-      - "9090:8080"      # Jenkins UI  → http://localhost:9090
+      - "9091:8080"      # Jenkins UI  → http://localhost:9091
       - "50000:50000"    # Jenkins agent port
     volumes:
       - jenkins_data:/var/jenkins_home
