@@ -22,7 +22,9 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - ride-network
+      ride-network:
+        aliases:
+          - backend
 
   # ── Frontend UI (React + Vite → Nginx) ────────────────────────────────────
   frontend:
